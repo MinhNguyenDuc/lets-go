@@ -16,16 +16,16 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	snippets, err := app.snippets.Latest()
+	// snippets, err := app.snippets.Latest()
 
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
+	// if err != nil {
+	// 	app.serverError(w, err)
+	// 	return
+	// }
 
-	for _, snippet := range snippets {
-		fmt.Fprintf(w, "%v\n", snippet)
-	}
+	// for _, snippet := range snippets {
+	// 	fmt.Fprintf(w, "%v\n", snippet)
+	// }
 
 	files := []string{
 		"./ui/html/home.page.html",
@@ -94,5 +94,26 @@ func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	fmt.Fprintf(w, "Displaying snippet: %v", s)
+	data := &templateData{Snippet: s}
+
+	files := []string{
+		"./ui/html/base.layout.html",
+		"./ui/html/footer.partial.html",
+		"./ui/html/show.page.tmpl",
+	}
+
+	ts, err := template.ParseFiles(files...)
+
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	err = ts.Execute(w, data)
+
+	if err != nil {
+		fmt.Println(err)
+		app.serverError(w, err)
+		return
+	}
 }
